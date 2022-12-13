@@ -1,0 +1,118 @@
+Hello bharatkalyan.k
+		     Details of VM's configured for Ansible Course in Hyper-V
+--------------------------------------------------------------------------------------------------
+      VM Name           :   Switch Name  :    Hostname     :  IP Address   :  UserName  : Password
+--------------------------------------------------------------------------------------------------
+Ansible-Control-Server  :  ACOS-Ansible  : ansible-control : 169.254.1.11  :    root    : infy@123
+Ansible-WebNode         :  ACOS-Ansible  :    webnode1     : 169.254.1.12  :    root    : infy@123
+Ansible-DBNode          :  ACOS-Ansible  :     dbnode1     : 169.254.1.13  :    root    : infy@123
+--------------------------------------------------------------------------------------------------
+         You can now connect to the VM's in via putty using IP Address, Username & Password
+
+                                            Happy Learning! 
+PC1
+En
+Conf t
+Host PC1
+No ip routing
+Int f0/0
+Ip add 10.90.70.10 255.255.255.0
+Speed 100
+Duplex full
+No shut
+Exi
+Ip default-gateway 10.90.70.1
+exit
+
+----------------------------------------
+
+PC2
+En
+Conf t
+Host PC2
+No ip routing
+Int f0/0
+Ip add 172.90.70.10 255.255.255.0
+No shut
+Speed 100
+Duplex full
+Exi
+Ip default-gateway 172.90.70.1
+exit
+
+----------------------------------------
+
+ESW1
+En
+Conf t
+Vlan 40
+Vlan 80
+Vtp mode server
+Vtp domain Infy
+Int f1/0
+Switchport access vlan 40
+Exi
+Int f1/1
+Switchport mode trunk
+Exit
+ 
+---------------------------------------- 
+
+ESW2
+En
+Conf t
+Vtp mode client
+Vtp domain Infosys
+Int f1/1
+Switchport mode trunk
+Exit
+Int f1/0
+Switchport access vlan 80
+Exit
+
+----------------------------------------
+
+T_R1
+En
+Conf t
+Host T_R1
+Int f0/0
+Speed 100
+Duplex full
+No shut
+Exit
+Int f0/0.40
+Encapsulation dot1q 40
+Ip add 10.90.70.1 255.255.255.0
+Exit
+Int f0/0.80
+Encapsulation dot1q 80
+Ip add 172.90.70.1 255.255.255.0
+Exit
+Int f0/1
+Ip add 80.70.45.5 255.255.255.0
+No shut
+Exit
+Router eigrp 10
+Network 10.90.70.0 0.0.0.255
+Network 172.90.70.0 0.0.0.255
+Network 80.70.45.0 0.0.0.255
+Exit
+access-list 101 deny ip host 10.90.70.10 host 80.70.45.15
+Int f0/1
+ip access-group 101 in
+Exit
+
+----------------------------------------
+ 
+T_R2
+En
+Conf t
+Host T_R2
+Int f0/0
+Ip add 80.70.45.15 255.255.255.0
+No shut
+Exit
+Router eigrp 10
+Network 80.70.45.0 0.0.0.255
+Exit
