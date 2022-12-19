@@ -195,3 +195,90 @@ end
 wr
 
 
+troubleshooting
+
+host 2
+
+
+en
+conf t
+hostname host2
+no ip routing
+ip default-gateway 192.168.50.1
+int f0/0
+ip add 192.168.50.10 255.255.255.0
+no sh
+speed 100
+duplex full
+end
+
+
+
+
+router 11
+en
+conf t
+hostname router11
+int f0/1
+ip add 192.168.51.2 255.255.255.0
+cdp enable
+no sh
+exit
+ip route 0.0.0.0 0.0.0.0 f0/1
+
+router 10
+en
+conf t
+hostname router10
+int f0/0
+no sh
+exit
+int f0/0.100
+encapsulation dot1q 100
+ip add 192.168.50.1 255.255.255.0
+no sh
+exit
+int f0/1
+ip add 192.168.51.1 255.255.255.0
+no sh
+exit
+
+
+
+
+switch4
+
+en
+conf t
+hostname switch4
+vlan 100
+exit
+int f1/1
+switchport mode access
+switchport access vlan 100
+exit
+int range f1/2 - 4
+channel-group 3 mode on
+int port-channel 3
+switchport mode trunk
+switchport trunk encapsulation dot1q
+exit
+
+switch 5
+en
+conf t
+hostname switch5
+vlan 100
+exit
+int f1/5
+switchport mode trunk
+exit
+int range f1/2 - 4
+channel-group 3 mode on
+int port-channel 3
+switchport mode trunk
+switchport trunk encapsulation dot1q
+exit
+
+
+
