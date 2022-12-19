@@ -1,273 +1,526 @@
-hyd
-----
-conf t
-int f0/1
-ip add 10.0.0.14 255.255.255.252
-no shut
-end
-wr
+chd#sh run 
+Building configuration...
 
-conf t
-int l1
-ip add 1.1.1.1 255.255.255.0
-end
-wr
-
-conf t
-int l2
-ip add 1.1.2.1 255.255.255.0
-end
-wr
-
-conf t
-int l3
-ip add 1.1.3.1 255.255.255.0
-end
-wr
-
-ospf
-------
-conf t
-router ospf 3
-network 10.0.0.12 0.0.0.3 area 1
-network 1.1.1.0 0.0.0.255 area 100
-network 1.1.2.0 0.0.0.255 area 100
-network 1.1.3.0 0.0.0.255 area 100
-
-virtual link
--------------
-conf t
-router ospf 3
-area 1 virtual-link 10.0.0.13
-end
-wr
-
-sum---
----
-conf t
-router ospf 3
-area 100 range 1.0.0.0 255.0.0.0
-end
-
-auth
------
-conf t
-int f0/1
-ip ospf authentication
-ip ospf authentication-key plain
-end
-wr
-=============================================
-mys
------
-conf t
-int f0/0
-ip add 10.0.0.10 255.255.255.252
-no shut 
-end
-wr
-
-conf t
-int f0/1
-ip add 10.0.0.13 255.255.255.252
-no shut
-end 
-wr
-
-ospf
-------
-conf t
-router ospf 2
-network 10.0.0.8 0.0.0.3 area 0
-network 10.0.0.12 0.0.0.3 area 1
-end 
-wr
-
-virtual link
--------------
-conf t
-router ospf 2
-area 1 virtual-link 1.1.3.1
-end
-wr
-
-auth
-------
-conf t
-int f0/1
-ip ospf authentication 
-ip ospf authentication-key plain
-end
-============================================
-chd
-----
-conf t
-int f0/0
-ip add 10.0.0.2 255.255.255.252
-no shut 
-end 
-wr
-
-conf t
-int f0/1
-ip add 10.0.0.9 255.255.255.252
-no shut 
-end 
-wr
-
-ospf
------
-conf t
-router ospf 1
-network 10.0.0.8 0.0.0.3 area 0
-end 
-wr
-
-rip
-----
-conf t
-router rip 
-version 2
-network 10.0.0.0
-no net 1.1.3.1
-end
-wr
-
-redistribution
----------------
-conf t
-router rip 
-redistribute ospf 1 metric 4
-end 
-wr
-
-conf t
-router ospf 1
-redistribute rip subnets
-end 
-wr
-
-auth
------
-conf t
+Current configuration : 1213 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname chd
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
 key chain infy
-key 15
-key-string mysore
-end
-
-conf t
-int f0/0
-ip rip authentication key-chain infy
-ip rip authentication mode md5
-end 
-wr
-====================================================
-pun
-------
-conf t
-int f0/0
-ip add 10.0.0.1 255.255.255.252
-no shut
-end
-wr
-
-rip
-----------
-conf t
+ key 15
+   key-string mysore
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.0.0.2 255.255.255.252
+ ip rip authentication mode md5
+ ip rip authentication key-chain infy
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 10.0.0.9 255.255.255.252
+ duplex auto
+ speed auto
+!
+router ospf 1
+ log-adjacency-changes
+ redistribute rip subnets
+ network 10.0.0.8 0.0.0.3 area 0
+!
 router rip
-version 2
-network 10.0.0.0
-no net 1.1.3.1
+ version 2
+ redistribute ospf 1 metric 4
+ network 10.0.0.0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
 end
-wr
 
-conf t
+
+hyd#sh run 
+Building configuration...
+
+Current configuration : 1388 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname hyd
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface Loopback1
+ ip address 1.1.1.1 255.255.255.0
+!
+interface Loopback2
+ ip address 1.1.2.1 255.255.255.0
+!
+interface Loopback3
+ ip address 1.1.3.1 255.255.255.0
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 10.0.0.14 255.255.255.252
+ ip ospf authentication
+ ip ospf authentication-key plain
+ duplex auto
+ speed auto
+!
+router ospf 3
+ log-adjacency-changes
+ area 1 virtual-link 10.0.0.13
+ area 100 range 1.0.0.0 255.0.0.0
+ network 1.1.1.0 0.0.0.255 area 100
+ network 1.1.2.0 0.0.0.255 area 100
+ network 1.1.3.0 0.0.0.255 area 100
+ network 10.0.0.12 0.0.0.3 area 1
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
+
+
+mys#sh run 
+Building configuration...
+
+Current configuration : 1122 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname mys
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.0.0.10 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 10.0.0.13 255.255.255.252
+ ip ospf authentication
+ ip ospf authentication-key plain
+ duplex auto
+ speed auto
+!
+router ospf 2
+ log-adjacency-changes
+ area 1 virtual-link 1.1.3.1
+ network 10.0.0.8 0.0.0.3 area 0
+ network 10.0.0.12 0.0.0.3 area 1
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
+
+
+pun#sh run 
+Building configuration...
+
+Current configuration : 1073 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname pun
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
 key chain infy
-key 15
-key-string mysore
+ key 15
+   key-string mysore
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.0.0.1 255.255.255.252
+ ip rip authentication mode md5
+ ip rip authentication key-chain infy
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router rip
+ version 2
+ network 10.0.0.0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
 end
 
-conf t
-int f0/0
-ip rip authentication key-chain infy
-ip rip authentication mode md5
-end 
-wr
 
-
-troubleshooting
-
-host 2
-
-
-en
-conf t
-hostname host2
+Host2
+enable
+configure terminal
+hostname Host2
 no ip routing
 ip default-gateway 192.168.50.1
-int f0/0
-ip add 192.168.50.10 255.255.255.0
-no sh
-speed 100
-duplex full
-end
-
-
-
-
-router 11
-en
-conf t
-hostname router11
-int f0/1
-ip add 192.168.51.2 255.255.255.0
-cdp enable
-no sh
-exit
-ip route 0.0.0.0 0.0.0.0 f0/1
-
-router 10
-en
-conf t
-hostname router10
-int f0/0
-no sh
-exit
-int f0/0.100
-encapsulation dot1q 100
-ip add 192.168.50.1 255.255.255.0
-no sh
-exit
-int f0/1
-ip add 192.168.51.1 255.255.255.0
-no sh
+interface f0/0
+ip address 192.168.50.10 255.255.255.0
+no shutdown
 exit
 
-
-
-
-switch4
-
-en
-conf t
-hostname switch4
+Switch4
+enable
+configure terminal
+hostname Switch4
 vlan 100
 exit
-int f1/1
+interface f1/1
 switchport mode access
 switchport access vlan 100
 exit
-int range f1/2 - 4
+interface range f1/2 - 4
 channel-group 3 mode on
-int port-channel 3
 switchport mode trunk
 switchport trunk encapsulation dot1q
 exit
 
-switch 5
-en
-conf t
-hostname switch5
+Switch5
+enable
+configure terminal
+hostname Switch5
 vlan 100
 exit
 int f1/5
@@ -280,5 +533,824 @@ switchport mode trunk
 switchport trunk encapsulation dot1q
 exit
 
+Router10
+enable
+configure terminal
+hostname Router10
+interface f0/0.100
+encapsulation dot1q 100
+ip address 192.168.50.1 255.255.255.0
+no shutdown
+exit
+interface f0/1
+ip address 192.168.51.1 255.255.255.0
+no shutdown
+exit
+
+Router11
+enable
+configure terminal
+hostname Router11
+interface f0/1
+ip address 192.168.51.2 255.255.255.0
+cdp enable
+no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 f0/1
 
 
+Switch4#show run
+Building configuration...
+
+Current configuration : 3088 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service dhcp
+!
+hostname Switch4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip routing
+no ip icmp rate-limit unreachable
+no ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+macro name add_vlan
+end
+vlan database
+vlan $v
+exit
+@
+macro name del_vlan
+end
+vlan database
+no vlan $v
+exit
+@
+!
+vtp file nvram:vlan.dat
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface Port-channel3
+ switchport mode trunk
+!
+interface FastEthernet0/0
+ description *** Unused for Layer2 EtherSwitch ***
+ no ip address
+ no ip route-cache
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ description *** Unused for Layer2 EtherSwitch ***
+ no ip address
+ no ip route-cache
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ duplex full
+ speed 100
+!
+interface FastEthernet1/1
+ switchport access vlan 100
+ duplex full
+ speed 100
+!
+interface FastEthernet1/2
+ switchport mode trunk
+ duplex full
+ speed 100
+ channel-group 3 mode on
+!
+interface FastEthernet1/3
+ switchport mode trunk
+ duplex full
+ speed 100
+ channel-group 3 mode on
+!
+interface FastEthernet1/4
+ switchport mode trunk
+ duplex full
+ speed 100
+ channel-group 3 mode on
+!
+interface FastEthernet1/5
+ duplex full
+ speed 100
+!
+interface FastEthernet1/6
+ duplex full
+ speed 100
+!
+interface FastEthernet1/7
+ duplex full
+ speed 100
+!
+interface FastEthernet1/8
+ duplex full
+ speed 100
+!
+interface FastEthernet1/9
+ duplex full
+ speed 100
+!
+interface FastEthernet1/10
+ duplex full
+ speed 100
+!
+interface FastEthernet1/11
+ duplex full
+ speed 100
+!
+interface FastEthernet1/12
+ duplex full
+ speed 100
+!
+interface FastEthernet1/13
+ duplex full
+ speed 100
+!
+interface FastEthernet1/14
+ duplex full
+ speed 100
+!
+interface FastEthernet1/15
+ duplex full
+ speed 100
+!
+interface Vlan1
+ no ip address
+ no ip route-cache
+ shutdown
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+banner exec ^C
+
+***************************************************************
+This is a normal Router with a Switch module inside (NM-16ESW)
+It has been pre-configured with hard-coded speed and duplex
+
+To create vlans use the command "vlan database" in exec mode
+After creating all desired vlans use "exit" to apply the config
+
+To view existing vlans use the command "show vlan-switch brief"
+
+Alias(exec)     : vl   - "show vlan-switch brief" command
+Alias(configure): va X - macro to add vlan X
+Alias(configure): vd X - macro to delete vlan X
+***************************************************************
+
+^C
+alias configure va macro global trace add_vlan $v
+alias configure vd macro global trace del_vlan $v
+alias exec vl show vlan-switch brief
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
+
+
+Switch5#show run
+Building configuration...
+
+Current configuration : 3083 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service dhcp
+!
+hostname Switch5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip routing
+no ip icmp rate-limit unreachable
+no ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+macro name add_vlan
+end
+vlan database
+vlan $v
+exit
+@
+macro name del_vlan
+end
+vlan database
+no vlan $v
+exit
+@
+!
+vtp file nvram:vlan.dat
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface Port-channel3
+ switchport mode trunk
+!
+interface FastEthernet0/0
+ description *** Unused for Layer2 EtherSwitch ***
+ no ip address
+ no ip route-cache
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ description *** Unused for Layer2 EtherSwitch ***
+ no ip address
+ no ip route-cache
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ duplex full
+ speed 100
+!
+interface FastEthernet1/1
+ duplex full
+ speed 100
+!
+interface FastEthernet1/2
+ switchport mode trunk
+ duplex full
+ speed 100
+ channel-group 3 mode on
+!
+interface FastEthernet1/3
+ switchport mode trunk
+ duplex full
+ speed 100
+ channel-group 3 mode on
+!
+interface FastEthernet1/4
+ switchport mode trunk
+ duplex full
+ speed 100
+ channel-group 3 mode on
+!
+interface FastEthernet1/5
+ switchport mode trunk
+ duplex full
+ speed 100
+!
+interface FastEthernet1/6
+ duplex full
+ speed 100
+!
+interface FastEthernet1/7
+ duplex full
+ speed 100
+!
+interface FastEthernet1/8
+ duplex full
+ speed 100
+!
+interface FastEthernet1/9
+ duplex full
+ speed 100
+!
+interface FastEthernet1/10
+ duplex full
+ speed 100
+!
+interface FastEthernet1/11
+ duplex full
+ speed 100
+!
+interface FastEthernet1/12
+ duplex full
+ speed 100
+!
+interface FastEthernet1/13
+ duplex full
+ speed 100
+!
+interface FastEthernet1/14
+ duplex full
+ speed 100
+!
+interface FastEthernet1/15
+ duplex full
+ speed 100
+!
+interface Vlan1
+ no ip address
+ no ip route-cache
+ shutdown
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+banner exec ^C
+
+***************************************************************
+This is a normal Router with a Switch module inside (NM-16ESW)
+It has been pre-configured with hard-coded speed and duplex
+
+To create vlans use the command "vlan database" in exec mode
+After creating all desired vlans use "exit" to apply the config
+
+To view existing vlans use the command "show vlan-switch brief"
+
+Alias(exec)     : vl   - "show vlan-switch brief" command
+Alias(configure): va X - macro to add vlan X
+Alias(configure): vd X - macro to delete vlan X
+***************************************************************
+
+^C
+alias configure va macro global trace add_vlan $v
+alias configure vd macro global trace del_vlan $v
+alias exec vl show vlan-switch brief
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
+
+
+Router10#show run
+Building configuration...
+
+Current configuration : 1008 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/0.100
+ encapsulation dot1Q 100
+ ip address 192.168.50.1 255.255.255.0
+!
+interface FastEthernet0/1
+ ip address 192.168.51.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
+
+
+Router11#show run
+Building configuration...
+
+Current configuration : 963 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router11
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 192.168.51.2 255.255.255.0
+ duplex auto
+ speed auto
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 FastEthernet0/1
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
+
+
+
+Host2#show run
+Building configuration...
+
+Current configuration : 1006 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Host2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip routing
+no ip icmp rate-limit unreachable
+no ip cef
+!
+!
+!
+!
+no ip domain lookup
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 192.168.50.10 255.255.255.0
+ no ip route-cache
+ speed 100
+ full-duplex
+!
+interface FastEthernet0/1
+ no ip address
+ no ip route-cache
+ shutdown
+ duplex auto
+ speed auto
+!
+ip default-gateway 192.168.50.1
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end
